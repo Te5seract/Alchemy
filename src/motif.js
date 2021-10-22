@@ -74,9 +74,30 @@ const motif = (function () {
                 }
                 else if (fn.insert instanceof Array) {
                     fn.insert.forEach((item) => {
-                        console.log(item);
                         document.querySelector(selector).append(item);
                     });
+                }
+            }
+
+            fn.insertInto = function (props) {
+                for (let key in props) {
+                    if (!key.match(/{all}/igm)) {
+                        var insert = tmp.querySelector(key);
+
+                        document.querySelector(props[key]).append(insert);
+                    } else {
+                        var key = key.replace(/(| ){all}(| )/igm, ""),
+                            insert = tmp.querySelectorAll(key),
+                            nodeList = [];
+
+                        for (let i = 0; i < insert; i++) {
+                            nodeList.push(insert[i]);
+                        }
+
+                        nodeList.forEach((item) => {
+                            document.querySelector(props[key]).append(item);
+                        });
+                    }
                 }
             }
         }
