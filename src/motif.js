@@ -1,10 +1,10 @@
 const motif = (function () {
     var proto = Motif.prototype;
 
-    function Motif (selector) {
+    function Motif () {
         // this.put = "";
-        this.selector = selector;
-        this.elem = document.querySelector(selector);
+        // this.selector = selector;
+        // this.elem = document.querySelector(selector);
     }
 
     // proto.put = function (selector) {
@@ -61,9 +61,7 @@ const motif = (function () {
         xr.send();
     }
 
-    return (selector) => {
-        new Motif(selector);
-    };
+    return new Motif();
 })();
 
 // motif.load("{BlogURL}module-navigation", function (module) {
