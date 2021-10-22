@@ -34,6 +34,8 @@ const motif = (function () {
 
             fn.insertAll = function (selector) {
                 fn.insert = tmp.querySelectorAll(selector);
+
+                return fn;
             }
     
             fn.into = function (selector) {
@@ -41,12 +43,12 @@ const motif = (function () {
                     document.querySelector(selector).append(fn.insert);
                 }
                 else if (fn.insert instanceof Array) {
-                    for (let i = 0; i < fn.insert.length; i++) {
-                        document.querySelector(selector).append(fn.insert[i]);
-                    }
-                    // fn.insert.forEach((item) => {
-                    //     document.querySelector(selector).append(item);
-                    // });
+                    // for (let i = 0; i < fn.insert.length; i++) {
+                    //     document.querySelector(selector).append(fn.insert[i]);
+                    // }
+                    fn.insert.forEach((item) => {
+                        document.querySelector(selector).append(item);
+                    });
                 }
             }
         }
