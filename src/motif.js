@@ -86,8 +86,9 @@ const motif = (function () {
 
                         document.querySelector(props[key]).append(insert);
                     } else {
-                        var key = key.replace(/(| ){all}(| )/igm, ""),
-                            insert = tmp.querySelectorAll(key),
+                        key = key.replace(/(| ){all}(| )/igm, "");
+                        
+                        var insert = tmp.querySelectorAll(key),
                             nodeList = [];
 
                         for (let i = 0; i < insert; i++) {
