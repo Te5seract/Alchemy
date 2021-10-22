@@ -79,19 +79,29 @@ const motif = (function () {
                 }
             }
 
+            /**
+             * inserts multiple elements from the requested page into the specified location
+             * 
+             * @param {object} props 
+             * key value pair, key is the inserted item's selector and the value is the 
+             * inserted into element's selector:
+             * 
+             * {
+             *  ".requested-elem" : ".location"
+             * }
+             */
             fn.insertInto = function (props) {
                 for (let key in props) {
-                    if (!key.match(/{all}/igm)) {
+                    if (!key.match(/(| ){(| )all(| )}(| )|\[(| )all(| )\]/igm)) {
                         var insert = tmp.querySelector(key);
 
                         document.querySelector(props[key]).append(insert);
                     } else {
-                        key = key.replace(/(| ){all}(| )/igm, "");
-                        
-                        var insert = tmp.querySelectorAll(key),
+                        var validKey = key.replace(/(| ){(| )all(| )}(| )|\[(| )all(| )\]/igm, ""),
+                            insert = tmp.querySelectorAll(validKey),
                             nodeList = [];
 
-                        for (let i = 0; i < insert; i++) {
+                        for (let i = 0; i < insert.length; i++) {
                             nodeList.push(insert[i]);
                         }
 
