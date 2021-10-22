@@ -41,9 +41,12 @@ const motif = (function () {
                     document.querySelector(selector).append(fn.insert);
                 }
                 else if (fn.insert instanceof Array) {
-                    fn.insert.forEach((item) => {
-                        document.querySelector(selector).append(item);
-                    });
+                    for (let i = 0; i < fn.insert.length; i++) {
+                        document.querySelector(selector).append(fn.insert[i]);
+                    }
+                    // fn.insert.forEach((item) => {
+                    //     document.querySelector(selector).append(item);
+                    // });
                 }
             }
         }
