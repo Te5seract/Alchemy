@@ -2,18 +2,7 @@ const motif = (function () {
     var proto = Motif.prototype;
 
     function Motif () {
-        // this.put = "";
-        // this.selector = selector;
-        // this.elem = document.querySelector(selector);
     }
-
-    // proto.put = function (selector) {
-    //     this.put = selector;
-    // }
-
-    // proto.from = function (url, callback) {
-    //     var put = this.put;
-    // }
 
     function loadMethods (response, json) {
         var fn = {};
@@ -33,7 +22,14 @@ const motif = (function () {
             }
 
             fn.insertAll = function (selector) {
-                fn.insert = tmp.querySelectorAll(selector);
+                var items = [],
+                    nodes = tmp.querySelectorAll(selector);
+
+                for (let i = 0; i < nodes.length; i++) {
+                    items.push(nodes[i]);
+                }
+
+                fn.insert = items;
 
                 return fn;
             }
@@ -43,10 +39,8 @@ const motif = (function () {
                     document.querySelector(selector).append(fn.insert);
                 }
                 else if (fn.insert instanceof Array) {
-                    // for (let i = 0; i < fn.insert.length; i++) {
-                    //     document.querySelector(selector).append(fn.insert[i]);
-                    // }
                     fn.insert.forEach((item) => {
+                        console.log(item);
                         document.querySelector(selector).append(item);
                     });
                 }
@@ -79,9 +73,3 @@ const motif = (function () {
 
     return new Motif();
 })();
-
-// motif.load("{BlogURL}module-navigation", function (module) {
-//     module.insert("ul").into(".nav");
-// });
-
-// motif(".nav").put("ul").from("{BlogURL}module-navigation");
