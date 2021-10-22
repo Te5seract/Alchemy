@@ -43,7 +43,7 @@ const motif = (function () {
     proto.load = function (url, callback) {
         var xr = new XMLHttpRequest();
 
-        xr.open("GET", url);
+        xr.open("GET", url, true);
 
         xr.onreadystatechange = () => {
             if (xr.readyState === 4 && xr.status === 200) {
