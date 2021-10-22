@@ -31,9 +31,20 @@ const motif = (function () {
 
                 return fn;
             }
+
+            fn.insertAll = function (selector) {
+                fn.insert = tmp.querySelectorAll(selector);
+            }
     
             fn.into = function (selector) {
-                document.querySelector(selector).append(fn.insert);
+                if (!(fn.insert instanceof Array)) {
+                    document.querySelector(selector).append(fn.insert);
+                }
+                else if (fn.insert instanceof Array) {
+                    fn.insert.forEach((item) => {
+                        document.querySelector(selector).append(item);
+                    });
+                }
             }
         }
 
