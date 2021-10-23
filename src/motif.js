@@ -80,6 +80,31 @@ const motif = (function () {
             }
 
             /**
+             * excludes certain elements from being part of what was requested
+             * 
+             * @param  {...string} selectors 
+             * the element selectors to exclude from the requested item(s)
+             * 
+             * @return {self}
+             */
+            fn.exclude = function (...selectors) {
+                selectors.forEach((selector) => {
+                    if (!selector.match(/(| ){(| )all(| )}(| )|\[(| )all(| )\]/igm)) {
+                        tmp.querySelector(selector).remove();
+                    } else {
+                        var validSelector = selector.replace(/(| ){(| )all(| )}(| )|\[(| )all(| )\]/igm, ""),
+                            removable = tmp.querySelectorAll(validSelector);
+
+                        for (let i = 0; i < removable.length; i++) {
+                            removable[i].remove();
+                        }
+                    }
+                });
+
+                return fn;
+            }
+
+            /**
              * inserts multiple elements from the requested page into the specified location
              * 
              * @param {object} props 
