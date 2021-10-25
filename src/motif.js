@@ -3,6 +3,112 @@ const motif = (function () {
 
     function Motif () {}
 
+    // private methods
+    /**
+     * puts all selected request content into a specified location
+     * 
+     * @param {string} subject 
+     * the module to get out of the load method
+     * 
+     * @param {string} location 
+     * where to place the load method's content
+     * 
+     * @param {HTMLElement} tmp
+     * temporary HTML element containing the request HTML
+     * 
+     * @param {boolean} [execute]
+     * whether or not to append loaded content to the DOM
+     * (set to true by default)
+     * 
+     * @return {void}
+     */
+        function allFlag (subject, location, tmp, execute) {
+        if (!subject.match(/\[(| )all(| )\]/igm)) return subject;
+
+        var noFlag = subject.replace(/\[(| )all(| )\]/igm, ""),
+            nodes = tmp.querySelectorAll(noFlag),
+            nodeList = [],
+            execute = execute === undefined ? true : execute;
+
+        if (!execute) return true;
+
+        for (let i = 0; i < nodes.length; i++) {
+            nodeList.push(nodes[i]);
+        }
+
+        nodeList.forEach((node) => {
+            document.querySelector(location[subject]).append(node);
+        });
+    }
+
+    /**
+     * puts specified amount of selected request content into a 
+     * specified location
+     * 
+     * @param {string} subject 
+     * the module to get out of the load method
+     * 
+     * @param {string} location 
+     * where to place the load method's content
+     * 
+     * @param {HTMLElement} tmp
+     * temporary HTML element containing the request HTML
+     * 
+     * @param {boolean} [execute]
+     * whether or not to append loaded content to the DOM
+     * (set to true by default)
+     * 
+     * @return {void}
+     */
+    function amountFlag (subject, location, tmp, execute) {
+        if (!subject.match(/\[(| )\d+(| )\]/igm)) return subject;
+
+        var flag = subject.match(/\[(| )(\d+)(| )\]/igm)[0].replace(/\[|\]/igm, ""),
+            noFlag = subject.replace(/\[(| )\d+(| )\]/igm, ""),
+            nodes = tmp.querySelectorAll(noFlag),
+            nodeList = [],
+            execute = execute === undefined ? true : execute;
+
+        if (!execute) return true;
+
+        for (let i = 0; i < Number(flag); i++) {
+            nodeList.push(nodes[i]);
+        }
+
+        nodeList.forEach((node) => {
+            document.querySelector(location[subject]).append(node);
+        });
+    }
+
+    /**
+     * puts a singular request item into a specified location
+     * 
+     * @param {string} subject 
+     * the module to get out of the load method
+     * 
+     * @param {string} location 
+     * where to place the load method's content
+     * 
+     * @param {HTMLElement} tmp
+     * temporary HTML element containing the request HTML
+     * 
+     * @param {boolean} [execute]
+     * whether or not to append loaded content to the DOM
+     * (set to true by default)
+     * 
+     * @return {void}
+     */
+    function noFlag (subject, location, tmp, execute) {
+        if (!subject.match(/\[.*?\]/igm)) {
+            var subjectNode = tmp.querySelector(subject),
+            execute = execute === undefined ? true : execute;
+
+        if (!execute) return true;
+
+            document.querySelector(location).append(subjectNode);
+        }
+    }
+
     /**
      * methods for load method callback
      * 
@@ -68,7 +174,7 @@ const motif = (function () {
              * 
              * @return {void}
              */
-            fn.into = function (selector) {
+            fn.into = function (selector, callback) {
                 if (!(fn.insert instanceof Array)) {
                     document.querySelector(selector).append(fn.insert);
                 }
@@ -77,6 +183,8 @@ const motif = (function () {
                         document.querySelector(selector).append(item);
                     });
                 }
+
+                callback ? callback() : null;
             }
 
             /**
@@ -89,10 +197,11 @@ const motif = (function () {
              */
             fn.exclude = function (...selectors) {
                 selectors.forEach((selector) => {
-                    if (!selector.match(/(| ){(| )all(| )}(| )|\[(| )all(| )\]/igm)) {
+                    if (noFlag(selector, null, tmp, false)) {
                         tmp.querySelector(selector).remove();
-                    } else {
-                        var validSelector = selector.replace(/(| ){(| )all(| )}(| )|\[(| )all(| )\]/igm, ""),
+                    } 
+                    else if (allFlag(selector, null, tmp, false)) {
+                        var validSelector = selector.replace(/\[(| )all(| )\]/igm, ""),
                             removable = tmp.querySelectorAll(validSelector);
 
                         for (let i = 0; i < removable.length; i++) {
@@ -115,31 +224,63 @@ const motif = (function () {
              *  ".requested-elem" : ".location"
              * }
              */
-            fn.insertInto = function (props) {
+            fn.insertInto = function (props, callback) {
                 for (let key in props) {
-                    if (!key.match(/(| ){(| )all(| )}(| )|\[(| )all(| )\]/igm)) {
-                        var insert = tmp.querySelector(key);
-
-                        document.querySelector(props[key]).append(insert);
-                    } else {
-                        var validKey = key.replace(/(| ){(| )all(| )}(| )|\[(| )all(| )\]/igm, ""),
-                            insert = tmp.querySelectorAll(validKey),
-                            nodeList = [];
-
-                        for (let i = 0; i < insert.length; i++) {
-                            nodeList.push(insert[i]);
-                        }
-
-                        nodeList.forEach((item) => {
-                            document.querySelector(props[key]).append(item);
-                        });
-                    }
+                    noFlag(key, props, tmp);
+                    allFlag(key, props, tmp);
+                    amountFlag(key, props, tmp);
                 }
+
+                callback ? callback() : null;
+            }
+
+            /**
+             * alters the loaded HTML's layout
+             * 
+             * @param {string} selector 
+             * the HTML element to alter
+             * 
+             * @param {string} mutation 
+             * references to the HTML elements arranged in a 
+             * different order:
+             * 
+             * [[ img ]]
+             * 
+             * [[ p ]]
+             * 
+             * @return {void}
+             */
+            fn.mutate = function (selector, mutation) {
+                var nodes = tmp.querySelectorAll(selector),
+                    keys = mutation.match(/\[\[.*?\]\]/igm),
+                    validKeys = [];
+
+                keys.forEach((key, i) => {
+                    validKeys.push(key.replace(/\[|\]| /gm, ""));
+                });
+
+                for (let i = 0; i < nodes.length; i++) {
+                    var mutated = "";
+
+                    validKeys.forEach((key, x) => {
+                        var elems = nodes[i].querySelectorAll(key);
+
+                        for (let j = 0; j < elems.length; j++) {
+                            mutated += elems[j].outerHTML;
+                            elems[j].remove();
+                        }
+                    });
+
+                    nodes[i].innerHTML = mutated;
+                }
+                
             }
         }
 
         return fn;
     }
+
+    // public methods
 
     /**
      * loads DOM content from a url
