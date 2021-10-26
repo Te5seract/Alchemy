@@ -1,4 +1,4 @@
-const motif = (function () {
+const alchemy = (function () {
     var proto = Motif.prototype;
 
     function Motif () {}
