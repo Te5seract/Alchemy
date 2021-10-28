@@ -1,7 +1,7 @@
 const alchemy = (function () {
-    var proto = Motif.prototype;
+    var proto = Alchemy.prototype;
 
-    function Motif () {}
+    function Alchemy () {}
 
     // private methods
     /**
@@ -311,5 +311,5 @@ const alchemy = (function () {
         xr.send();
     }
 
-    return new Motif();
+    return new Alchemy();
 })();
